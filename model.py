@@ -29,15 +29,15 @@ class UNet(pl.LightningModule):
 
     def forward(self, x):
         cblock1 = self.encoder1(x)
-        cblock2 = self.encoder2(cblock1)
-        cblock3 = self.encoder3(cblock2)
-        cblock4 = self.encoder4(cblock3)
-        cblock5 = self.encoder5(cblock4)
+        cblock2 = self.encoder2(cblock1[0])
+        cblock3 = self.encoder3(cblock2[0])
+        cblock4 = self.encoder4(cblock3[0])
+        cblock5 = self.encoder5(cblock4[0])
 
-        ublock1 = self.decoder1(cblock5, cblock4)
-        ublock2 = self.decoder2(ublock1, cblock3)
-        ublock3 = self.decoder3(ublock2, cblock2)
-        ublock4 = self.decoder4(ublock3, cblock1)
+        ublock1 = self.decoder1(cblock5[0], cblock4[1])
+        ublock2 = self.decoder2(ublock1, cblock3[1])
+        ublock3 = self.decoder3(ublock2, cblock2[1])
+        ublock4 = self.decoder4(ublock3, cblock1[1])
 
         x = self.final_conv1(ublock4)
         x = self.final_conv2(x)
