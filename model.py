@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchmetrics
 import pytorch_lightning as pl
 from decoder import Decoder
 from encoder import Encoder
