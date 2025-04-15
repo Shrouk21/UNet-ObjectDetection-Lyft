@@ -38,7 +38,7 @@ def main():
     summary(model, input_shape[1:])
 
     #Initialize the logger
-    logger = TensorBoardLogger("lightning_logs", name="emodetector")
+    logger = TensorBoardLogger("lightning_logs", name="unet")
 
     # Load the best checkpoint
     checkpoint = ModelCheckpoint(monitor="val_loss", save_top_k=1,  mode="min")
