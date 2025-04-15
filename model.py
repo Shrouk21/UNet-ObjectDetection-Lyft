@@ -46,6 +46,7 @@ class UNet(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+        y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
         acc = self.train_accuracy(preds, y)
@@ -55,6 +56,7 @@ class UNet(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
+        y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
         acc = self.val_accuracy(preds, y)
@@ -63,6 +65,7 @@ class UNet(pl.LightningModule):
         return loss
     def test_step(self, batch, batch_idx):
         x, y = batch
+        y =y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)  
         acc = self.test_accuracy(preds, y)  
