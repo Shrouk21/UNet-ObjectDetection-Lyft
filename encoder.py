@@ -3,15 +3,15 @@ import torch.nn as nn
 
 
 class Encoder(nn.Module):
-    def __init__(self, input_size, n_filters=32, dropout_rate=0, maxpooling=False):
+    def __init__(self, input_channels, n_filters=32, dropout_rate=0, maxpooling=False):
         super(Encoder, self).__init__()
-        self.input_size = input_size
+        self.input_channels = input_channels
         self.n_filters = n_filters
         self.dropout_rate = dropout_rate
         self.maxpooling = maxpooling
 
 
-        self.conv1 = nn.Conv2d(input_size, n_filters, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(input_channels, n_filters, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(n_filters, n_filters, kernel_size=3, padding=1)
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.relu = nn.ReLU()
