@@ -27,7 +27,7 @@ class UNet(pl.LightningModule):
         self.final_conv2 = nn.Conv2d(n_filters, n_classes, kernel_size=1)
         
         self.loss_fn = nn.CrossEntropyLoss()
-        self.accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=n_classes, average='micro')
+        # self.accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=n_classes, average='micro')
 
         self.lr = lr
 
@@ -52,9 +52,9 @@ class UNet(pl.LightningModule):
         y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
-        acc = self.accuracy(preds.argmax(dim=1), y)
+        # acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("train_loss", loss, prog_bar=True)
-        self.log("train_accuracy", acc, prog_bar=True)
+        # self.log("train_accuracy", acc, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -62,18 +62,18 @@ class UNet(pl.LightningModule):
         y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
-        acc = self.accuracy(preds.argmax(dim=1), y)
+        # acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("val_loss", loss, prog_bar=True)
-        self.log("val_accuracy", acc, prog_bar=True)
+        # self.log("val_accuracy", acc, prog_bar=True)
         return loss
     def test_step(self, batch, batch_idx):
         x, y = batch
         y =y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)  
-        acc = self.accuracy(preds.argmax(dim=1), y)  
+        # acc = self.accuracy(preds.argmax(dim=1), y)  
         self.log("test_loss", loss, prog_bar=True)
-        self.log("test_accuracy", acc, prog_bar=True)  
+        # self.log("test_accuracy", acc, prog_bar=True)  
         return loss  
 
 
