@@ -34,9 +34,9 @@ class UNet(pl.LightningModule):
         cblock4 = self.encoder4(cblock3[0])
         cblock5 = self.encoder5(cblock4[0])
 
-        ublock1 = self.decoder1(cblock5[0], cblock4[1])
-        ublock2 = self.decoder2(ublock1, cblock3[1])
-        ublock3 = self.decoder3(ublock2, cblock2[1])
+        ublock1 = self.decoder1(cblock5[0], cblock4[1], n_filters*8)
+        ublock2 = self.decoder2(ublock1, cblock3[1], n_filters*4)
+        ublock3 = self.decoder3(ublock2, cblock2[1], n_filters*2)
         ublock4 = self.decoder4(ublock3, cblock1[1])
 
         x = self.final_conv1(ublock4)
