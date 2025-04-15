@@ -14,7 +14,7 @@ class DataProcessing(Dataset):
         self.mask_dir = mask_dir
         self.transform = transform
         self.image_names = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
-        self.mask_names = sorted([f for f in os.gitgitlistdir(mask_dir) if f.endswith(('.bmp'))])
+        self.mask_names = sorted([f for f in os.listdir(mask_dir) if f.endswith(('.bmp'))])
         assert len(self.image_names) == len(self.mask_names), "Mismatched number of images and masks"
 
     def __len__(self):
