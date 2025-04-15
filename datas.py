@@ -52,9 +52,9 @@ class Dataloader(pl.LightningDataModule):
 
     def setup(self, stage=None):
         train_image_dir = os.path.join(self.data_dir, "train_val", "images")
-        train_mask_dir = os.path.join(self.data_dir, "train_val", "mask")
+        train_mask_dir = os.path.join(self.data_dir, "train_val", "masks")
         test_image_dir = os.path.join(self.data_dir, "TEST", "images")
-        test_mask_dir = os.path.join(self.data_dir, "TEST", "mask")
+        test_mask_dir = os.path.join(self.data_dir, "TEST", "masks")
 
         full_dataset = DataProcessing(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=self.transform)
         val_size = int(self.val_split * len(full_dataset))
