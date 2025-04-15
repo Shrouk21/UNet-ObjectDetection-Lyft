@@ -26,6 +26,7 @@ class UNet(pl.LightningModule):
         self.final_conv2 = nn.Conv2d(n_filters, n_classes, kernel_size=1)
         
         self.loss_fn = nn.CrossEntropyLoss()
+        self.accuracy = MulticlassAccuracy(num_classes=NUM_CLASSES, average='micro')
         self.lr = lr
 
     def forward(self, x):
@@ -49,7 +50,7 @@ class UNet(pl.LightningModule):
         y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
-        acc = self.train_accuracy(preds, y)
+        acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("train_loss", loss, prog_bar=True)
         self.log("train_accuracy", acc, prog_bar=True)
         return loss
@@ -59,7 +60,7 @@ class UNet(pl.LightningModule):
         y = y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)
-        acc = self.val_accuracy(preds, y)
+        acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("val_loss", loss, prog_bar=True)
         self.log("val_accuracy", acc, prog_bar=True)
         return loss
@@ -68,7 +69,7 @@ class UNet(pl.LightningModule):
         y =y.long()
         preds = self.forward(x)
         loss = self.loss_fn(preds, y)  
-        acc = self.test_accuracy(preds, y)  
+        acc = self.accuracy(preds.argmax(dim=1), y)  
         self.log("test_loss", loss, prog_bar=True)
         self.log("test_accuracy", acc, prog_bar=True)  
         return loss  
