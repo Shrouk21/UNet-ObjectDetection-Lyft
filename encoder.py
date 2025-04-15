@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class Encoder(nn.Module):
-    def __init__(self, input_channels, n_filters=32, dropout_rate=0, maxpooling=False):
+    def __init__(self, input_channels, n_filters=32, dropout_rate=0, maxpooling=True):
         super(Encoder, self).__init__()
         self.input_channels = input_channels
         self.n_filters = n_filters
