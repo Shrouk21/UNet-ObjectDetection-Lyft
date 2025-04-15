@@ -6,7 +6,7 @@ from encoder import Encoder
 
 
 class UNet(pl.LightningModule):
-    def __init__(self, input_channels, n_filters, n_classes, lr=1e-3):
+    def __init__(self, input_channels, n_filters=32, n_classes, lr=1e-3):
         super(UNetLightning, self).__init__()
         self.save_hyperparameters()
         
