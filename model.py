@@ -27,7 +27,7 @@ class UNet(pl.LightningModule):
         self.final_conv2 = nn.Conv2d(n_filters, n_classes, kernel_size=1)
         
         self.loss_fn = nn.CrossEntropyLoss()
-        self.accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=num_classes, average='micro')
+        self.accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=n_classes, average='micro')
 
         self.lr = lr
 
