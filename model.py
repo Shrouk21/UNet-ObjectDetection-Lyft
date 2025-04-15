@@ -13,7 +13,7 @@ class UNet(pl.LightningModule):
         self.encoder1 = Encoder(input_channels, n_filters)
         self.encoder2 = Encoder(n_filters, n_filters * 2)
         self.encoder3 = Encoder(n_filters * 2, n_filters * 4)
-        self.encoder4 = Encoder(n_filters * 4, n_filters * 8, dropout_rate=0.3, maxpooling=False)
+        self.encoder4 = Encoder(n_filters * 4, n_filters * 8, dropout_rate=0.3)
         self.encoder5 = Encoder(n_filters * 8, n_filters * 16, dropout_rate=0.3, maxpooling=False)
 
         self.decoder1 = Decoder(n_filters * 16, n_filters * 8)
