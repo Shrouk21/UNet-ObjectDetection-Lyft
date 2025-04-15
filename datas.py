@@ -14,7 +14,7 @@ class DataProcessing(Dataset):
         self.mask_dir = mask_dir
         self.transform = transform
         self.image_names = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
-        self.mask_names = sorted([f for f in os.listdir(mask_dir) if f.endswith(('.jpg', '.png'))])
+        self.mask_names = sorted([f for f in os.gitgitlistdir(mask_dir) if f.endswith(('.bmp'))])
         assert len(self.image_names) == len(self.mask_names), "Mismatched number of images and masks"
 
     def __len__(self):
@@ -51,10 +51,10 @@ class Dataloader(pl.LightningDataModule):
         ])
 
     def setup(self, stage=None):
-        train_image_dir = os.path.join(self.data_dir, "train", "images")
+        train_image_dir = os.path.join(self.data_dir, "train_val", "images")
         train_mask_dir = os.path.join(self.data_dir, "train", "mask")
-        test_image_dir = os.path.join(self.data_dir, "test", "images")
-        test_mask_dir = os.path.join(self.data_dir, "test", "mask")
+        test_image_dir = os.path.join(self.data_dir, "TEST", "images")
+        test_mask_dir = os.path.join(self.data_dir, "TEST", "mask")
 
         full_dataset = DataProcessing(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=self.transform)
         val_size = int(self.val_split * len(full_dataset))
