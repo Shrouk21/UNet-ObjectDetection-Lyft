@@ -16,6 +16,8 @@ class DataProcessing(Dataset):
         self.image_names = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
         self.mask_names = sorted([f for f in os.listdir(mask_dir) if f.endswith(('.bmp'))])
         assert len(self.image_names) == len(self.mask_names), "Mismatched number of images and masks"
+        #map pixel values to class indices in mask
+        self.mapping = self.dynamic_mapping(mask_dir)
 
     def __len__(self):
         return len(self.image_names)
@@ -26,13 +28,29 @@ class DataProcessing(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        mask = np.vectorize(mapping.get)(mask)
 
         if self.transform:
             augmented = self.transform(image=image, mask=mask)
             image = augmented['image']
-            mask = augmented['mask']
+            mask = torch,tensor(augmented['mask'], dtype=torch.long)
         return image, mask
+    def dynamic_mapping(self, mask_dir):
+        unique_values = set()
+        for mask_name in os.listdir(mask_dir):
+            mask_path = os.path.join(mask_dir, mask_name)
+            mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            unique_values.update(np.unique(mask))
+            
+        return {value:idx for idx, value in enumerate(unique_values))
+    
+        # # Get unique pixel values and sort them
+        # unique_values = np.unique(mask)
+        # mapping = {value:idx for idx, value in enumerate(unique_values)}
 
+        # #apply mapping to the mask
+        # mapped_mask = np.vectorize(mapping.get)(mask)
+        # return mapped_mask, mapping
 
 class Dataloader(pl.LightningDataModule):
     def __init__(self, data_dir, batch_size=32, num_workers=4, val_split=0.2):
