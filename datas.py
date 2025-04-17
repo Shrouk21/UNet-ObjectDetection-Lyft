@@ -33,7 +33,7 @@ class DataProcessing(Dataset):
         if self.transform:
             augmented = self.transform(image=image, mask=mask)
             image = augmented['image']
-            mask = torch,tensor(augmented['mask'], dtype=torch.long)
+            mask = torch.tensor(augmented['mask'], dtype=torch.long)
         return image, mask
     def dynamic_mapping(self, mask_dir):
         unique_values = set()
