@@ -42,7 +42,7 @@ class DataProcessing(Dataset):
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
             unique_values.update(np.unique(mask))
             
-        return {value:idx for idx, value in enumerate(unique_values))
+        return {value:idx for idx, value in enumerate(unique_values)}
     
         # # Get unique pixel values and sort them
         # unique_values = np.unique(mask)
