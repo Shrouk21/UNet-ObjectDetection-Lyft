@@ -34,7 +34,7 @@ class DataProcessing(Dataset):
         mask = Image.open(mask_path).convert('RGB')
 
         if self.transform:
-            augmented = self.transform(image=image, mask=mask)
+            augmented = self.transform(image=np.array(image), mask=np.array(mask))
             image = augmented['image']
             mask = torch.tensor(torch.max(augmented['mask'], dim=0, keepdim=True).values, dtype=torch.long)
         return image, mask
