@@ -6,6 +6,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import pytorch_lightning as pl
+from PIL import Image
 
 
 class DataProcessing(Dataset):
@@ -25,15 +26,17 @@ class DataProcessing(Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.image_dir, self.image_names[idx])
         mask_path = os.path.join(self.mask_dir, self.mask_names[idx])
-        image = cv2.imread(img_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-        mask = np.vectorize(self.mapping.get)(mask)
+        # image = cv2.imread(img_path)
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+        # mask = np.vectorize(self.mapping.get)(mask)
+        image = Image.open(img_path).convert('RGB')
+        mask = Image.open(mask_path).convert('RGB')
 
         if self.transform:
             augmented = self.transform(image=image, mask=mask)
             image = augmented['image']
-            mask = torch.tensor(augmented['mask'], dtype=torch.long)
+            mask = torch.tensor(torch.max(augmented['mask'], dim=0, keepdim=True).values, dtype=torch.long)
         return image, mask
     def dynamic_mapping(self, mask_dir):
         unique_values = set()
@@ -60,7 +63,7 @@ class Dataloader(pl.LightningDataModule):
         self.num_workers = num_workers
         self.val_split = val_split
         self.transform = A.Compose([
-            A.Resize(512, 512),
+            A.Resize(512, 512, interpolation=cv2.INTER_NEAREST),
             A.HorizontalFlip(p=0.5),
             A.RandomRotate90(p=0.5),
             A.ColorJitter(p=0.5),
