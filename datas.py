@@ -28,7 +28,7 @@ class DataProcessing(Dataset):
         image = cv2.imread(img_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-        mask = np.vectorize(mapping.get)(mask)
+        mask = np.vectorize(self.mapping.get)(mask)
 
         if self.transform:
             augmented = self.transform(image=image, mask=mask)
