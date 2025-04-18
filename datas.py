@@ -41,7 +41,10 @@ class DataProcessing(Dataset):
         
         # Map RGB values to class indices
         class_indices = np.array([self.class_map.get(tuple(rgb), -1) for rgb in mask])
+        
         mask = class_indices.reshape(h, w)  # Reshape back to [H, W]
+        if np.any(mask==-1):
+            mask[mask == -1] = 0
     
         # Apply transformations
         if self.transform:
