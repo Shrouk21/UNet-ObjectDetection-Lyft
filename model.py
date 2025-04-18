@@ -61,7 +61,7 @@ class UNet(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch
         preds = self.forward(x)
-        preds = pred.squeeze(0)
+        preds = preds.squeeze(0)
         loss = self.loss_fn(preds, y)
         # acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("val_loss", loss, prog_bar=True)
