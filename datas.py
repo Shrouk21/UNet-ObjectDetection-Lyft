@@ -10,10 +10,15 @@ from PIL import Image
 
 
 class DataProcessing(Dataset):
-    def __init__(self, image_dir, mask_dir, transform=None):
+    def __init__(self, class_map,  image_dir, mask_dir, transform=True):
         self.image_dir = image_dir
         self.mask_dir = mask_dir
-        self.transform = transform
+        self.class_map = class_map
+        self.transfrom = A.Compose([
+            A.Resize(512, 512),
+            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            ToTensorV2()
+        ])
         self.image_names = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
         self.mask_names = sorted([f for f in os.listdir(mask_dir) if f.endswith(('.bmp'))])
         assert len(self.image_names) == len(self.mask_names), "Mismatched number of images and masks"
@@ -23,29 +28,39 @@ class DataProcessing(Dataset):
     def __len__(self):
         return len(self.image_names)
 
-    def __getitem__(self, idx):
-        img_path = os.path.join(self.image_dir, self.image_names[idx])
-        mask_path = os.path.join(self.mask_dir, self.mask_names[idx])
-        # image = cv2.imread(img_path)
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        # mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-        # mask = np.vectorize(self.mapping.get)(mask)
-        image = Image.open(img_path).convert('RGB')
-        mask = Image.open(mask_path).convert('RGB')
+def __getitem__(self, idx):
 
-        if self.transform:
-            augmented = self.transform(image=np.array(image), mask=np.array(mask))
-            image = augmented['image']
-            mask = torch.tensor(torch.max(augmented['mask'], dim=0, keepdim=True).values, dtype=torch.long)
-        return image, mask
-    def dynamic_mapping(self, mask_dir):
-        unique_values = set()
-        for mask_name in os.listdir(mask_dir):
-            mask_path = os.path.join(mask_dir, mask_name)
-            mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-            unique_values.update(np.unique(mask))
+    img_path = os.path.join(self.image_dir, self.image_names[idx])
+    mask_path = os.path.join(self.mask_dir, self.mask_names[idx])
+
+    image = Image.open(img_path).convert("RGB") 
+    mask = Image.open(mask_path).convert("RGB") 
+    mask = np.array(mask)  
+    h, w, _ = mask.shape
+    mask = mask.reshape(-1, 3)
+    
+    # Map RGB values to class indices
+    class_indices = np.array([self.class_map.get(tuple(rgb), -1) for rgb in mask])
+    mask = class_indices.reshape(h, w)  # Reshape back to [H, W]
+
+    # Apply transformations
+    if self.transform:
+        augmented = self.transform(image=np.array(image), mask=mask)
+        image = augmented['image']  
+        mask = augmented['mask']    
+
+    # Ensure mask is a long tensor (required for CrossEntropyLoss)
+    mask = torch.tensor(mask, dtype=torch.long)
+
+    return image, mask
+    # def dynamic_mapping(self, mask_dir):
+    #     unique_values = set()
+    #     for mask_name in os.listdir(mask_dir):
+    #         mask_path = os.path.join(mask_dir, mask_name)
+    #         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+    #         unique_values.update(np.unique(mask))
             
-        return {value:idx for idx, value in enumerate(unique_values)}
+    #     return {value:idx for idx, value in enumerate(unique_values)}
     
         # # Get unique pixel values and sort them
         # unique_values = np.unique(mask)
@@ -62,14 +77,6 @@ class Dataloader(pl.LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.val_split = val_split
-        self.transform = A.Compose([
-            A.Resize(512, 512, interpolation=cv2.INTER_NEAREST),
-            A.HorizontalFlip(p=0.5),
-            A.RandomRotate90(p=0.5),
-            A.ColorJitter(p=0.5),
-            A.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
-            ToTensorV2()
-        ])
 
     def setup(self, stage=None):
         train_image_dir = os.path.join(self.data_dir, "train_val", "images")
