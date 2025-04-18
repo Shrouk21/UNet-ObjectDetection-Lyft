@@ -71,13 +71,14 @@ def __getitem__(self, idx):
         # return mapped_mask, mapping
 
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, data_dir, batch_size=32, num_workers=4, val_split=0.2, test_split=0.1):
+    def __init__(self, data_dir, class_map, batch_size=32, num_workers=4, val_split=0.2, test_split=0.1):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.val_split = val_split
         self.test_split = test_split
+        self.class_map = class_map
 
     def setup(self, img_subpath, mask_subpath,stage=None):
         train_image_dir = os.path.join(self.data_dir, img_subpath)
@@ -87,7 +88,7 @@ class Dataloader(pl.LightningDataModule):
         print("Looking for training images in:", train_image_dir)
         print("Looking for training masks in:", train_mask_dir)
     
-        full_dataset = DataProcessing(image_dir=train_image_dir, mask_dir=train_mask_dir)
+        full_dataset = DataProcessing(class_map=self.class_map, image_dir=train_image_dir, mask_dir=train_mask_dir)
         dataset_size = len(full_dataset)
         val_size = int(self.val_split * dataset_size)
         test_size = int(self.test_split * dataset_size)
