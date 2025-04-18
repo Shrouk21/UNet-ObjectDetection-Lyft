@@ -82,7 +82,7 @@ class Dataloader(pl.LightningDataModule):
 
     def setup(self,stage=None):
         img_subpath, mask_subpath = os.listdir(self.data_dir)
-        train_image_dir = os.path.join(self.data_dir, )
+        train_image_dir = os.path.join(self.data_dir, img_subpath)
         train_mask_dir = os.path.join(self.data_dir, mask_subpath)
     
     
