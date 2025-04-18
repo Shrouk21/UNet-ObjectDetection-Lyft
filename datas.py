@@ -27,32 +27,32 @@ class DataProcessing(Dataset):
 
     def __len__(self):
         return len(self.image_names)
-
-def __getitem__(self, idx):
-
-    img_path = os.path.join(self.image_dir, self.image_names[idx])
-    mask_path = os.path.join(self.mask_dir, self.mask_names[idx])
-
-    image = Image.open(img_path).convert("RGB") 
-    mask = Image.open(mask_path).convert("RGB") 
-    mask = np.array(mask)  
-    h, w, _ = mask.shape
-    mask = mask.reshape(-1, 3)
     
-    # Map RGB values to class indices
-    class_indices = np.array([self.class_map.get(tuple(rgb), -1) for rgb in mask])
-    mask = class_indices.reshape(h, w)  # Reshape back to [H, W]
-
-    # Apply transformations
-    if self.transform:
-        augmented = self.transform(image=np.array(image), mask=mask)
-        image = augmented['image']  
-        mask = augmented['mask']    
-
-    # Ensure mask is a long tensor (required for CrossEntropyLoss)
-    mask = torch.tensor(mask, dtype=torch.long)
-
-    return image, mask
+    def __getitem__(self, idx):
+    
+        img_path = os.path.join(self.image_dir, self.image_names[idx])
+        mask_path = os.path.join(self.mask_dir, self.mask_names[idx])
+    
+        image = Image.open(img_path).convert("RGB") 
+        mask = Image.open(mask_path).convert("RGB") 
+        mask = np.array(mask)  
+        h, w, _ = mask.shape
+        mask = mask.reshape(-1, 3)
+        
+        # Map RGB values to class indices
+        class_indices = np.array([self.class_map.get(tuple(rgb), -1) for rgb in mask])
+        mask = class_indices.reshape(h, w)  # Reshape back to [H, W]
+    
+        # Apply transformations
+        if self.transform:
+            augmented = self.transform(image=np.array(image), mask=mask)
+            image = augmented['image']  
+            mask = augmented['mask']    
+    
+        # Ensure mask is a long tensor (required for CrossEntropyLoss)
+        mask = torch.tensor(mask, dtype=torch.long)
+    
+        return image, mask
     # def dynamic_mapping(self, mask_dir):
     #     unique_values = set()
     #     for mask_name in os.listdir(mask_dir):
