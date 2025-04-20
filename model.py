@@ -9,6 +9,7 @@ from encoder import Encoder
 class UNet(pl.LightningModule):
     def __init__(self, input_channels, n_filters=32, n_classes=8, lr=1e-3):
         super().__init__()
+        self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.save_hyperparameters()
         self.n_filters = n_filters
         
@@ -49,6 +50,7 @@ class UNet(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+        x, y = x.to(self.DEVICE), y.to(self.DEVICE)
         if y.ndim == 4 and y.shape[1] == 1:
             y = y.squeeze(1)  # [B, 1, H, W] -> [B, H, W]
         preds = self.forward(x)  # [B, C, H, W]
@@ -58,6 +60,7 @@ class UNet(pl.LightningModule):
     
     def validation_step(self, batch, batch_idx):
         x, y = batch
+        x, y = x.to(self.DEVICE), y.to(self.DEVICE)
         if y.ndim == 4 and y.shape[1] == 1:
             y = y.squeeze(1)
         preds = self.forward(x)
@@ -67,6 +70,7 @@ class UNet(pl.LightningModule):
     
     def test_step(self, batch, batch_idx):
         x, y = batch
+        x, y = x.to(self.DEVICE), y.to(self.DEVICE)
         if y.ndim == 4 and y.shape[1] == 1:
             y = y.squeeze(1)
         preds = self.forward(x)
