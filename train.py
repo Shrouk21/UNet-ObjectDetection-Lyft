@@ -1,6 +1,5 @@
 import torch
 from PIL import Image
-# from dataloader import ImageDataModule
 from model import UNet
 from torchsummary import summary
 from datas import Dataloader
