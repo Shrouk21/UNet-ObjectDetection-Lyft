@@ -22,7 +22,7 @@ class DataProcessing(Dataset):
         self.image_names = sorted([f for f in os.listdir(image_dir) if f.endswith(('.jpg', '.png'))])
         self.mask_names = sorted([f for f in os.listdir(mask_dir) if f.endswith(('.jpg', 'png'))])
         assert len(self.image_names) == len(self.mask_names), "Mismatched number of images and masks"
-        self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
 
     def __len__(self):
         return len(self.image_names)
@@ -53,8 +53,6 @@ class DataProcessing(Dataset):
 
       
         mask = mask.to(torch.long)
-
-        image, mask = image.to(self.DEVICE), mask.to(self.DEVICE)
     
         return image, mask
 
