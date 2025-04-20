@@ -30,8 +30,8 @@ pip install -r requirements.txt
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/yourrepository.git
-    cd yourrepository
+    git clone https://github.com/Shrouk21/UNet-LYFT.git
+    cd UNet-LYFT
     ```
 
 2. Install required packages:
@@ -75,7 +75,7 @@ The data is preprocessed with standard transformations such as resizing and norm
 To train the model, run the following command:
 
 ```bash
-python main.py
+python train.py
 ```
 
 ### Training Workflow
@@ -109,8 +109,6 @@ plots/
 ## Model Checkpoints
 The best model, based on the lowest validation loss, is saved during training. You can load this model for inference or further training. The checkpoint is saved in the `lightning_logs` folder.
 
-## Inference
-To perform inference, load the trained model and pass input images for prediction. Modify the `main.py` script to suit your needs for inference.
 
 ## File Descriptions
 - `model.py`: Contains the U-Net model definition.
