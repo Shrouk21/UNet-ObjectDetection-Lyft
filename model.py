@@ -49,33 +49,31 @@ class UNet(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        # y = y.long()
-        preds = self.forward(x)
-        preds = preds.squeeze(0)
-        loss = self.loss_fn(preds, y)
-        # acc = self.accuracy(preds.argmax(dim=1), y)
+        if y.ndim == 4 and y.shape[1] == 1:
+            y = y.squeeze(1)  # [B, 1, H, W] -> [B, H, W]
+        preds = self.forward(x)  # [B, C, H, W]
+        loss = self.loss_fn(preds, y)  # y: [B, H, W]
         self.log("train_loss", loss, prog_bar=True)
-        # self.log("train_accuracy", acc, prog_bar=True)
         return loss
-
+    
     def validation_step(self, batch, batch_idx):
         x, y = batch
+        if y.ndim == 4 and y.shape[1] == 1:
+            y = y.squeeze(1)
         preds = self.forward(x)
-        preds = preds.squeeze(0)
         loss = self.loss_fn(preds, y)
-        # acc = self.accuracy(preds.argmax(dim=1), y)
         self.log("val_loss", loss, prog_bar=True)
-        # self.log("val_accuracy", acc, prog_bar=True)
         return loss
+    
     def test_step(self, batch, batch_idx):
         x, y = batch
-        preds = preds.squeeze(0)
+        if y.ndim == 4 and y.shape[1] == 1:
+            y = y.squeeze(1)
         preds = self.forward(x)
-        loss = self.loss_fn(preds, y)  
-        # acc = self.accuracy(preds.argmax(dim=1), y)  
+        loss = self.loss_fn(preds, y)
         self.log("test_loss", loss, prog_bar=True)
-        # self.log("test_accuracy", acc, prog_bar=True)  
-        return loss  
+        return loss
+
 
 
     def configure_optimizers(self):
