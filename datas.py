@@ -50,28 +50,13 @@ class DataProcessing(Dataset):
             augmented = self.transform(image=np.array(image), mask=mask)
             image = augmented['image']  
             mask = augmented['mask']    
-    
-        # Ensure mask is a long tensor (required for CrossEntropyLoss)
-        mask = torch.tensor(mask, dtype=torch.long)
+
+      
+        mask = mask.to(torch.long)
+
         image, mask = image.to(self.DEVICE), mask.to(self.DEVICE)
     
         return image, mask
-    # def dynamic_mapping(self, mask_dir):
-    #     unique_values = set()
-    #     for mask_name in os.listdir(mask_dir):
-    #         mask_path = os.path.join(mask_dir, mask_name)
-    #         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-    #         unique_values.update(np.unique(mask))
-            
-    #     return {value:idx for idx, value in enumerate(unique_values)}
-    
-        # # Get unique pixel values and sort them
-        # unique_values = np.unique(mask)
-        # mapping = {value:idx for idx, value in enumerate(unique_values)}
-
-        # #apply mapping to the mask
-        # mapped_mask = np.vectorize(mapping.get)(mask)
-        # return mapped_mask, mapping
 
 class Dataloader(pl.LightningDataModule):
     def __init__(self, data_dir, class_map, batch_size=32, num_workers=4, val_split=0.2, test_split=0.1):
@@ -99,11 +84,6 @@ class Dataloader(pl.LightningDataModule):
         train_size = dataset_size - val_size - test_size
         self.train_dataset, self.val_dataset, self.test_dataset = random_split(full_dataset, [train_size, val_size, test_size])
 
-
-        
-        # test_image_dir = os.path.join(self.data_dir, "TEST", "images")
-        # test_mask_dir = os.path.join(self.data_dir, "TEST", "masks")
-        # self.test_dataset = DataProcessing(image_dir=test_image_dir, mask_dir=test_mask_dir, transform=self.transform)
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
